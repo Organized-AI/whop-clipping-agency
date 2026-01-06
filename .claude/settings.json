@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "npm install",
+      "npm run dev",
+      "npm run build",
+      "npm run typecheck",
+      "npm run lint",
+      "npm run setup",
+      "npx tsx",
+      "git add",
+      "git commit",
+      "git push",
+      "git status",
+      "git diff",
+      "git log",
+      "curl http://localhost:*",
+      "ngrok http *"
+    ],
+    "deny": [
+      "rm -rf /",
+      "rm -rf ~",
+      "rm -rf .",
+      "sudo rm",
+      "npm publish"
+    ]
+  },
+  "preferences": {
+    "autoCommit": false,
+    "confirmBeforeWrite": false,
+    "showDiffs": true
+  },
+  "project": {
+    "name": "whop-clipping-agency",
+    "type": "backend",
+    "language": "typescript",
+    "framework": "express"
+  }
+}
