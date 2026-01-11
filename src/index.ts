@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import clipsRouter from "./api/clips";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -8,6 +9,16 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 // Health check
+app.get("/health", (req, res) => {
+  res.json({
+    status: "ok",
+    service: "whop-clipping-agency",
+    version: "0.1.0",
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Legacy root endpoint
 app.get("/", (req, res) => {
   res.json({
     status: "ok",
@@ -22,17 +33,19 @@ app.post("/webhooks/whop", express.raw({ type: "application/json" }), (req, res)
   res.status(200).json({ received: true });
 });
 
-// API placeholder (Phase 5)
-app.use("/api", (req, res) => {
-  res.json({ message: "API coming in Phase 5" });
-});
+// Clips API Routes
+app.use("/api/clips", clipsRouter);
 
 // Error handler
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error(err.stack);
   res.status(500).json({ error: "Internal server error" });
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Clipping Agency server running on port ${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Health check: http://localhost:${PORT}/health`);
+  console.log(`Clip import: POST http://localhost:${PORT}/api/clips/import`);
 });
+
+export default app;

@@ -11,7 +11,9 @@
     "typecheck": "tsc --noEmit",
     "setup": "tsx src/scripts/setup-whop.ts",
     "test:scrapcreators": "npx tsx scripts/test-scrapcreators.ts",
-    "test:drive": "npx tsx scripts/test-drive.ts"
+    "test:drive": "npx tsx scripts/test-drive.ts",
+    "test:workflow": "npx tsx scripts/test-workflow.ts",
+    "test:api": "npx tsx scripts/test-api.ts"
   },
   "keywords": [
     "whop",
