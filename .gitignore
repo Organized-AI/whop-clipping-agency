@@ -27,7 +27,12 @@ coverage/
 # Temp
 *.tmp
 *.temp
--e 
+temp/
+*.mp4
+
 # Service Account (sensitive - never commit)
 config/service-account.json
 CONFIG/service-account.json
+
+# Keep example files
+!config/service-account.example.json

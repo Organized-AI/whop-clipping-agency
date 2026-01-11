@@ -29,7 +29,13 @@
       "Skill(*)",
       "Read(*)",
       "Write(*)",
-      "Edit(*)"
+      "Edit(*)",
+      "Bash(test:*)",
+      "Bash(npm install:*)",
+      "Bash(npm view:*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nPhase 0: Environment setup for ScrapCreators-Drive integration\n\n- Add googleapis, node-fetch, uuid dependencies\n- Create clips-config.ts with Zod validation\n- Configure ScrapCreators and Google Drive env variables\n- Add service-account.example.json template\n- Update .gitignore for temp files and service account\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
     ],
     "deny": []
   },
@@ -40,7 +46,11 @@
   "mcpServers": {
     "filesystem": {
       "command": "npx",
-      "args": ["-y", "@anthropic/mcp-server-filesystem", "."]
+      "args": [
+        "-y",
+        "@anthropic/mcp-server-filesystem",
+        "."
+      ]
     }
   },
   "agents": {
