@@ -10,7 +10,8 @@
     "lint": "eslint src/",
     "typecheck": "tsc --noEmit",
     "setup": "tsx src/scripts/setup-whop.ts",
-    "test:scrapcreators": "npx tsx scripts/test-scrapcreators.ts"
+    "test:scrapcreators": "npx tsx scripts/test-scrapcreators.ts",
+    "test:drive": "npx tsx scripts/test-drive.ts"
   },
   "keywords": [
     "whop",
