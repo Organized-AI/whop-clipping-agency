@@ -35,7 +35,9 @@
       "Bash(npm view:*)",
       "Bash(npm run typecheck:*)",
       "Bash(git add:*)",
-      "Bash(git commit -m \"$\\(cat <<''EOF''\nPhase 0: Environment setup for ScrapCreators-Drive integration\n\n- Add googleapis, node-fetch, uuid dependencies\n- Create clips-config.ts with Zod validation\n- Configure ScrapCreators and Google Drive env variables\n- Add service-account.example.json template\n- Update .gitignore for temp files and service account\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nPhase 0: Environment setup for ScrapCreators-Drive integration\n\n- Add googleapis, node-fetch, uuid dependencies\n- Create clips-config.ts with Zod validation\n- Configure ScrapCreators and Google Drive env variables\n- Add service-account.example.json template\n- Update .gitignore for temp files and service account\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(npm run test:scrapcreators:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nPhase 1: ScrapCreators service with clip fetch and download\n\n- Add clip types with Zod validation schemas\n- Implement ScrapCreators service for API integration\n- Add extractSlug, fetchClipData, processClipData methods\n- Implement video download to temp directory with cleanup\n- Fix API endpoint to use url parameter instead of handle\n- Add test script for service verification\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
     ],
     "deny": []
   },
