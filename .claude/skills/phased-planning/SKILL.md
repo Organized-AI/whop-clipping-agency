@@ -22,9 +22,67 @@ Creates comprehensive phased implementation plans that generate copy-paste ready
 
 ## Workflow
 
+### Phase 0: Pre-Planning - Marketplace Scan ⭐ NEW
+
+**Before creating phases, scan the plugin marketplace for relevant components:**
+
+```bash
+# Check marketplace for helpful plugins
+# Repository: https://github.com/Organized-AI/plugin-marketplace
+```
+
+**Relevance Analysis:**
+
+1. **Identify project type:**
+   | Project Type | Recommended Plugins |
+   |--------------|---------------------|
+   | TypeScript/Node | context7, hookify, github |
+   | Frontend/UI | frontend-design, hookify |
+   | API Backend | context7, github, stripe (if payments) |
+   | Database | supabase |
+   | Tracking/Analytics | gtm-ai-plugin, fix-your-tracking |
+
+2. **Check existing components:**
+   ```bash
+   ls .claude/agents/
+   ls .claude/commands/
+   ls .claude/hooks/
+   ls .claude/skills/
+   cat .mcp.json
+   ```
+
+3. **Install relevant plugins:**
+   ```bash
+   # Via plugin command
+   /plugin install [plugin-name]@organized-ai-marketplace
+   
+   # Or manually copy from marketplace
+   git clone https://github.com/Organized-AI/plugin-marketplace.git /tmp/marketplace
+   cp -r /tmp/marketplace/[plugin]/[component-type]/* .claude/[component-type]/
+   ```
+
+4. **Configure MCP servers:**
+   - Update `.mcp.json` with relevant MCP servers
+   - Verify API keys/tokens are configured
+
+**Marketplace Plugins Reference:**
+
+| Plugin | Components | Use When |
+|--------|------------|----------|
+| context7 | MCP | Need up-to-date library docs |
+| github | MCP | GitHub API operations |
+| hookify | Commands, Hooks, Skills | Custom safety/workflow rules |
+| stripe | Commands, Skills, MCP | Payment processing |
+| supabase | MCP | Supabase database |
+| frontend-design | Skills | Building UI components |
+| agent-sdk-dev | Commands, Agents | Building Agent SDK apps |
+| serena | MCP | Semantic code analysis |
+
+---
+
 ### Phase 1: Project Analysis
 
-Before creating phases, gather information:
+After marketplace scan, gather project information:
 
 ```
 1. Identify all components to build
@@ -48,6 +106,13 @@ Generate `PLANNING/IMPLEMENTATION-MASTER-PLAN.md`:
 
 ## Pre-Implementation Checklist
 
+### ✅ Marketplace Scan (Complete)
+| Plugin | Status | Reason |
+|--------|--------|--------|
+| context7 | ✅ Installed | Library docs lookup |
+| hookify | ✅ Installed | Safety hooks |
+| [plugin] | ⏭️ Skipped | Not relevant |
+
 ### ✅ Documentation (Complete)
 | Component | Location | Status |
 |-----------|----------|--------|
@@ -64,7 +129,7 @@ Generate `PLANNING/IMPLEMENTATION-MASTER-PLAN.md`:
 
 | Phase | Name | Files | Dependencies |
 |-------|------|-------|--------------|
-| 0 | Project Setup | package.json, tsconfig | None |
+| 0 | Project Setup + Marketplace | package.json, .mcp.json | None |
 | 1 | Core Infrastructure | src/lib/* | Phase 0 |
 | ... | ... | ... | ... |
 ```
@@ -130,11 +195,11 @@ Generate `CLAUDE-CODE-PHASE-0.md` at project root for easy copy-paste into Claud
 
 ---
 
-## Standard Phase Types
+## Standard Phase Types (Updated)
 
 | Phase | Name | Purpose |
 |-------|------|---------|
-| 0 | Project Setup | package.json, tsconfig, dependencies, structure |
+| 0 | Project Setup + Marketplace | package.json, tsconfig, **marketplace scan**, MCP config |
 | 1 | Core Infrastructure | Config, logging, utilities, base clients |
 | 2 | Framework | Base classes, types, patterns |
 | 3 | Core Logic | Main business logic implementation |
@@ -143,19 +208,111 @@ Generate `CLAUDE-CODE-PHASE-0.md` at project root for easy copy-paste into Claud
 
 ---
 
+## Phase 0 Template (with Marketplace)
+
+```markdown
+# Phase 0: Project Setup + Marketplace Scan
+
+## Objective
+Initialize project structure, dependencies, and Claude Code components from marketplace.
+
+---
+
+## Prerequisites
+- Node.js 18+ installed
+- Git initialized
+- Access to Organized-AI/plugin-marketplace
+
+---
+
+## Tasks
+
+### 1. Scan Plugin Marketplace
+```bash
+# Check marketplace for relevant plugins
+# Repository: https://github.com/Organized-AI/plugin-marketplace
+
+# Analyze project needs:
+# - TypeScript? → context7
+# - API work? → github MCP
+# - Safety needed? → hookify
+```
+
+### 2. Install Relevant Plugins
+```bash
+# Option A: Plugin command
+/plugin marketplace add Organized-AI/plugin-marketplace
+/plugin install context7@organized-ai-marketplace
+/plugin install hookify@organized-ai-marketplace
+
+# Option B: Manual copy
+git clone https://github.com/Organized-AI/plugin-marketplace.git /tmp/marketplace
+cp -r /tmp/marketplace/[plugin]/* .claude/
+```
+
+### 3. Configure MCP Servers
+Update `.mcp.json`:
+```json
+{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    }
+  }
+}
+```
+
+### 4. Initialize Project
+```bash
+npm init -y
+npm install typescript @types/node tsx --save-dev
+npx tsc --init
+```
+
+### 5. Create Directory Structure
+[Standard structure...]
+
+---
+
+## Success Criteria
+- [ ] Marketplace scanned for relevant plugins
+- [ ] Relevant plugins installed
+- [ ] MCP servers configured in .mcp.json
+- [ ] package.json created
+- [ ] TypeScript configured
+- [ ] Directory structure created
+
+---
+
+## Completion
+```bash
+git add -A
+git commit -m "Phase 0: Project setup with marketplace plugins"
+```
+```
+
+---
+
 ## File Organization
 
 ```
 PROJECT/
+├── .claude/
+│   ├── agents/           # From marketplace + custom
+│   ├── commands/         # From marketplace + custom
+│   ├── hooks/            # From marketplace + custom
+│   ├── skills/           # From marketplace + custom
+│   └── settings.local.json
+├── .mcp.json             # MCP server config
 ├── PLANNING/
 │   ├── IMPLEMENTATION-MASTER-PLAN.md
 │   └── implementation-phases/
 │       ├── PHASE-0-PROMPT.md
 │       ├── PHASE-1-PROMPT.md
-│       ├── PHASE-0-COMPLETE.md (created after)
-│       └── PHASE-1-COMPLETE.md (created after)
-├── CLAUDE-CODE-PHASE-0.md (quick-start prompt)
-└── CLAUDE.md (updated with phase tracking)
+│       └── ...
+├── CLAUDE-CODE-PHASE-0.md
+└── CLAUDE.md
 ```
 
 ---
@@ -182,6 +339,11 @@ PROJECT/
 ## Deliverables
 - [x] [File/feature 1]
 - [x] [File/feature 2]
+
+## Marketplace Plugins (Phase 0 only)
+- [x] context7 - Library docs
+- [x] hookify - Safety hooks
+- [ ] stripe - Skipped (not needed)
 
 ## Verification
 - `[command 1]`: ✅
@@ -219,12 +381,14 @@ claude --dangerously-skip-permissions
 
 ## Best Practices
 
-1. **Complete code in prompts** - Don't leave implementation to inference
-2. **Explicit success criteria** - Checkboxes that can be verified
-3. **Clear dependencies** - State what must be complete first
-4. **Git commits per phase** - Clean history with phase messages
-5. **No time estimates** - Use phase order, not days/weeks
-6. **Context files** - Always specify what to read first
+1. **Scan marketplace first** - Phase 0 always includes marketplace scan
+2. **Complete code in prompts** - Don't leave implementation to inference
+3. **Explicit success criteria** - Checkboxes that can be verified
+4. **Clear dependencies** - State what must be complete first
+5. **Git commits per phase** - Clean history with phase messages
+6. **No time estimates** - Use phase order, not days/weeks
+7. **Context files** - Always specify what to read first
+8. **MCP configuration** - Ensure servers are configured before Phase 1
 
 ---
 
@@ -234,3 +398,6 @@ Works with:
 - **organized-codebase-applicator** - For project structure
 - **phase-0-template** - For quick project setup
 - **tech-stack-orchestrator** - For component recommendations
+- **scan-marketplace** - For plugin discovery ⭐ NEW
+- **hookify** - For custom safety rules (from marketplace)
+- **context7** - For library documentation (from marketplace)

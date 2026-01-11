@@ -12,6 +12,17 @@
         "WHOP_API_KEY": "apik_J4hkeeUA68bLm_A2020942_C_bbb1a7824c0d0109cbab7b56e7557021f807ba73571347f26ccfcae272105b",
         "WHOP_APP_ID": "app_l5V0vdZjANzCAW"
       }
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      }
     }
   }
 }
