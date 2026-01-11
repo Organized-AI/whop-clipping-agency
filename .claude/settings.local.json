@@ -1,0 +1,70 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(wc:*)",
+      "Bash(tree:*)",
+      "Bash(cat:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(rm:*)",
+      "Bash(git:*)",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(curl:*)",
+      "Bash(echo:*)",
+      "Bash(touch:*)",
+      "Bash(timeout:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(grep:*)",
+      "Bash(sed:*)",
+      "Bash(brctl:*)",
+      "Bash(python3:*)",
+      "Bash(node:*)",
+      "Bash(tsx:*)",
+      "mcp__whop_sdk_api__*",
+      "Skill(*)",
+      "Read(*)",
+      "Write(*)",
+      "Edit(*)"
+    ],
+    "deny": []
+  },
+  "env": {
+    "NODE_ENV": "development",
+    "PORT": "3000"
+  },
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-server-filesystem", "."]
+    }
+  },
+  "agents": {
+    "autoInvoke": true,
+    "available": [
+      "scrapcreators-specialist",
+      "drive-specialist",
+      "clip-workflow",
+      "backend-dev",
+      "whop-specialist"
+    ]
+  },
+  "commands": {
+    "available": [
+      "phase",
+      "status",
+      "commit",
+      "test",
+      "import-clip",
+      "test-webhook"
+    ]
+  },
+  "hooks": {
+    "preCommit": "pre-commit-typecheck",
+    "postPhase": "post-phase"
+  }
+}
