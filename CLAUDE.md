@@ -8,6 +8,7 @@ Automated clipping agency management system built on the Whop platform with Goog
 - **Framework**: Express.js
 - **Platform**: Whop SDK (memberships, notifications, experiences)
 - **Storage**: Google Drive API (folder provisioning, sharing)
+- **Clip Ingestion**: ScrapCreators API (Twitch clips)
 - **Database**: Supabase/PostgreSQL
 - **Validation**: Zod
 
@@ -26,80 +27,113 @@ src/
 ├── index.ts              # Express entry point
 ├── api/                  # REST API endpoints
 │   ├── routes.ts
+│   ├── clips.ts          # Clip import endpoints
 │   └── controllers/
 ├── webhooks/             # Whop webhook handlers
 │   ├── whop-handler.ts
 │   └── events/
 ├── services/             # Business logic
+│   ├── scrapcreators-service.ts  # Twitch clip fetching
+│   ├── drive-service.ts          # Google Drive uploads
+│   ├── clip-workflow.ts          # Import orchestration
 │   ├── whop-setup.ts
 │   ├── clipper-management.ts
-│   ├── drive-service.ts
 │   └── notifications.ts
 ├── types/                # TypeScript definitions
+│   └── clips.ts          # Clip-related types
 ├── config/               # Configuration
+│   └── clips-config.ts   # ScrapCreators/Drive config
 └── utils/                # Helpers
 ```
 
 ## Key Commands
 ```bash
-npm run dev          # Start dev server with tsx watch
-npm run build        # TypeScript compile
-npm run typecheck    # Type check without emit
-npm run setup        # Run Whop product setup script
+npm run dev              # Start dev server with tsx watch
+npm run build            # TypeScript compile
+npm run typecheck        # Type check without emit
+npm run test:scrapcreators  # Test ScrapCreators service
+npm run test:drive       # Test Google Drive service
+npm run test:workflow    # Test full import workflow
+npm run test:api         # Test API endpoints (server must be running)
 ```
 
-## Implementation Phases
-See `PHASED_PLAN.md` for full implementation guide.
+## Implementation Plans
 
-| Phase | Focus | Files |
-|-------|-------|-------|
-| 0 | Project Setup | package.json, tsconfig.json |
-| 1 | Whop Products | src/services/whop-setup.ts |
-| 2 | Webhooks | src/webhooks/ |
-| 3 | Clipper System | src/services/clipper-management.ts |
-| 4 | Drive Integration | src/services/drive-service.ts |
-| 5 | Admin API | src/api/ |
-| 6 | Notifications | src/services/notifications.ts |
+### Original Platform Setup
+See `PHASED_PLAN.md` for Whop platform implementation.
+
+### ScrapCreators → Google Drive Integration
+See `PLANNING/SCRAPCREATORS-DRIVE-MASTER-PLAN.md` for clip import automation.
+
+**Quick Start:**
+```bash
+claude --dangerously-skip-permissions
+# Then: Read CLAUDE-CODE-SCRAPCREATORS.md
+```
+
+## API Endpoints
+
+### Clip Import
+```bash
+# Import single clip
+POST /api/clips/import
+{
+  "clipUrl": "https://clips.twitch.tv/ClipSlug",
+  "quality": "1080"  # optional: 1080, 720, 480, 360
+}
+
+# Batch import (up to 10)
+POST /api/clips/import/batch
+{
+  "clips": [
+    { "clipUrl": "...", "quality": "1080" },
+    { "clipUrl": "...", "quality": "720" }
+  ]
+}
+
+# Preview clip metadata (no download)
+POST /api/clips/preview
+{
+  "clipUrl": "https://clips.twitch.tv/ClipSlug"
+}
+```
 
 ## Critical Files
-- `PHASED_PLAN.md` - Master implementation guide
-- `docs/phases/` - Claude Code prompts for each phase
+- `PHASED_PLAN.md` - Whop platform implementation
+- `PLANNING/SCRAPCREATORS-DRIVE-MASTER-PLAN.md` - Clip import implementation
+- `CLAUDE-CODE-SCRAPCREATORS.md` - Quick-start prompts for clip system
 - `.env.example` - Required environment variables
-- `src/index.ts` - Application entry point
+- `config/service-account.json` - Google Cloud service account (not in git)
 
-## Whop API Patterns
-```typescript
-import { WhopAPI } from "@whop/sdk";
-const whop = new WhopAPI({ apiKey: process.env.WHOP_API_KEY });
+## Environment Variables
+```env
+# Whop
+WHOP_API_KEY=
+WHOP_APP_ID=
+WHOP_WEBHOOK_SECRET=
 
-// List memberships
-const memberships = await whop.memberships.list({ status: "active" });
+# ScrapCreators
+SCRAPCREATORS_API_KEY=
+SCRAPCREATORS_API_URL=https://api.scrapecreators.com/v1
 
-// Send notification
-await whop.notifications.create({ user_id, title, body });
+# Google Drive (Service Account)
+GOOGLE_DRIVE_PARENT_FOLDER=
+GOOGLE_SERVICE_ACCOUNT_PATH=./config/service-account.json
+
+# Clip Settings
+DEFAULT_CLIP_QUALITY=1080
+TEMP_DOWNLOAD_PATH=./temp
+
+# Server
+PORT=3000
+NODE_ENV=development
 ```
 
-## Google Drive Patterns
-```typescript
-import { google } from "googleapis";
-const drive = google.drive({ version: "v3", auth });
-
-// Create folder
-await drive.files.create({
-  requestBody: { name, mimeType: "application/vnd.google-apps.folder", parents },
-});
-
-// Share folder
-await drive.permissions.create({
-  fileId, requestBody: { type: "user", role: "writer", emailAddress },
-});
-```
-
-## Development Notes
-- Always use Zod for request validation
-- Webhook signature verification is critical
-- Queue long-running tasks (folder creation, notifications)
-- Log all Whop events for debugging
+## Service Account Setup
+1. Google Cloud Console → Create Service Account
+2. Download JSON key → `config/service-account.json`
+3. Share target Drive folder with service account email
+4. Service account email is in JSON under `client_email`
 
 ## Git Workflow
 ```bash
@@ -107,8 +141,13 @@ git add -A && git commit -m "feat: description"
 git push origin main
 ```
 
-## Environment Setup
-Copy `.env.example` to `.env` and fill in:
-- `WHOP_API_KEY` - From Whop developer dashboard
-- `WHOP_APP_ID` - Your Whop app ID
-- `GOOGLE_*` - Google Cloud OAuth credentials
+## Byterover MCP Integration
+Use `byterover-store-knowledge` when:
+- Learning new patterns or APIs
+- Encountering error solutions
+- Finding reusable code patterns
+
+Use `byterover-retrieve-knowledge` when:
+- Starting new tasks
+- Before architectural decisions
+- Debugging issues
