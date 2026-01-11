@@ -27,3 +27,7 @@ coverage/
 # Temp
 *.tmp
 *.temp
+-e 
+# Service Account (sensitive - never commit)
+config/service-account.json
+CONFIG/service-account.json
