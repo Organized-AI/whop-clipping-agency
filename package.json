@@ -13,7 +13,9 @@
     "test:scrapcreators": "npx tsx scripts/test-scrapcreators.ts",
     "test:drive": "npx tsx scripts/test-drive.ts",
     "test:workflow": "npx tsx scripts/test-workflow.ts",
-    "test:api": "npx tsx scripts/test-api.ts"
+    "test:api": "npx tsx scripts/test-api.ts",
+    "test:youtube": "npx tsx scripts/test-youtube.ts",
+    "import:youtube": "npx tsx scripts/import-youtube-clip.ts"
   },
   "keywords": [
     "whop",

@@ -43,7 +43,9 @@
       "Bash(npx tsx:*)",
       "Bash(git commit -m \"$\\(cat <<''EOF''\nPhase 2: Google Drive service with Shared Drive support\n\n- Implement DriveService with service account authentication\n- Add date-based folder creation and management\n- Support file upload, listing, and metadata retrieval\n- Add supportsAllDrives flag for Shared Drive compatibility\n- Create test script for Drive service verification\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(npm run test:workflow:*)",
-      "Bash(git commit -m \"$\\(cat <<''EOF''\nPhase 3: Workflow and API integration\n\n- Add clip-workflow.ts service orchestrating ScrapCreators and Drive\n- Create Express API routes: /api/clips/import, /import/batch, /preview\n- Update index.ts with clips router integration\n- Add test-workflow.ts for end-to-end workflow testing\n- Add test-api.ts for HTTP endpoint testing\n- Full clip import pipeline: fetch → download → upload to Drive\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nPhase 3: Workflow and API integration\n\n- Add clip-workflow.ts service orchestrating ScrapCreators and Drive\n- Create Express API routes: /api/clips/import, /import/batch, /preview\n- Update index.ts with clips router integration\n- Add test-workflow.ts for end-to-end workflow testing\n- Add test-api.ts for HTTP endpoint testing\n- Full clip import pipeline: fetch → download → upload to Drive\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(npm run dev:*)",
+      "Bash(npm run test:api:*)"
     ],
     "deny": []
   },
