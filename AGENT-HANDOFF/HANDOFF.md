@@ -1,58 +1,83 @@
 # Agent Handoff Document
 
-## Project: Whop Clipping Agency
+## Project: whop-clipping-agency
 
 ### Quick Context
-Automated clipping agency management system on Whop platform. Handles client memberships, clipper recruitment, Google Drive folder provisioning, and notifications.
+Automated clip import system that takes Twitch/YouTube clips and uploads them to Google Drive with organized folder structure. Built for a Whop community clipping agency.
 
-### Key Files to Read
-1. `CLAUDE.md` - Project overview and patterns
-2. `PHASED_PLAN.md` - Implementation roadmap
-3. `docs/phases/` - Detailed phase instructions
+### Key Files to Read First
+1. `CLAUDE.md` - Project overview and commands
+2. `PLANNING/SCRAPCREATORS-DRIVE-MASTER-PLAN.md` - Architecture and status
+3. `PLANNING/implementation-phases/` - Phase-by-phase implementation guides
 
 ### Current State
-- Framework: ✅ TypeScript + Express scaffolded
-- Phase 0 (Setup): ✅ Complete
-- Phase 1 (Whop Products): ⏳ Ready to implement
-- Phase 2-6: ⬜ Pending
 
-### Tech Stack
-- Node.js + TypeScript (strict)
-- Express.js
-- Whop SDK (`@whop/sdk`)
-- Google Drive API (`googleapis`)
-- Zod for validation
+| Component | Status |
+|-----------|--------|
+| Environment Setup | ✅ Complete |
+| ScrapCreators Service | ✅ Complete |
+| Google Drive Service | ✅ Complete |
+| Twitch Workflow + API | ✅ Complete |
+| YouTube Core Service | ✅ Complete |
+| YouTube API Routes | ⏳ Pending (Phase 4b) |
+| VOD Detection | 📋 Planned (Phase 5) |
 
-### Key Patterns
-```typescript
-// Whop client
-import { WhopAPI } from "@whop/sdk";
-const whop = new WhopAPI({ apiKey: process.env.WHOP_API_KEY });
+### Active Endpoints
 
-// Drive client
-import { google } from "googleapis";
-const drive = google.drive({ version: "v3", auth });
+```
+POST /api/clips/import        # Twitch clip import
+POST /api/clips/import/batch  # Batch Twitch import
+POST /api/clips/preview       # Preview Twitch clip
 ```
 
 ### Next Steps
-1. Run `npm install` to install dependencies
-2. Copy `.env.example` to `.env` and fill in credentials
-3. Execute Phase 1 using `/phase 1` command
-4. Continue through phases sequentially
 
-### Environment Variables Needed
-- `WHOP_API_KEY` - Whop API key
-- `WHOP_APP_ID` - Whop app ID
-- `GOOGLE_*` - Google OAuth credentials
-- `DATABASE_URL` - Supabase connection string
+1. **Phase 4b**: Create `src/api/youtube.ts` routes
+2. **Phase 5**: Implement VOD highlight detection
 
-### Commands Available
-- `/phase [n]` - Load and execute phase n
-- `/status` - Check implementation progress
-- `/commit [type] [msg]` - Create conventional commit
-- `/test-webhook [event]` - Test webhook handling
+### Project Structure
 
-### Agents Available
-- `backend-dev` - TypeScript/Express patterns
-- `whop-specialist` - Whop SDK and API usage
-- `drive-specialist` - Google Drive integration
+```
+src/
+├── api/
+│   └── clips.ts              # Twitch routes (working)
+├── services/
+│   ├── scrapcreators-service.ts
+│   ├── drive-service.ts
+│   ├── clip-workflow.ts      # Twitch workflow
+│   ├── youtube-service.ts    # YouTube download
+│   └── youtube-workflow.ts   # YouTube workflow
+├── types/
+│   ├── clips.ts
+│   └── youtube.ts
+└── index.ts                  # Express app
+
+PLANNING/
+├── implementation-phases/    # Current phase docs
+├── AI-CLIPPING-VOD-RESEARCH.md
+├── DEV-STREAM-HIGHLIGHT-DETECTION.md
+└── SCRAPCREATORS-DRIVE-MASTER-PLAN.md
+
+.archive/
+└── legacy-whop-agency-phases/  # Old agency management phases
+```
+
+### CLI Tools Required
+- `yt-dlp` (installed: 2025.06.09)
+- `ffmpeg` (installed: 7.1.1)
+
+### Quick Commands
+
+```bash
+# Start dev server
+npm run dev
+
+# Test Twitch import
+npm run test:workflow
+
+# Test YouTube service
+npm run test:youtube
+
+# Import YouTube clip
+npm run import:youtube "URL" "1:00" "2:00"
+```
