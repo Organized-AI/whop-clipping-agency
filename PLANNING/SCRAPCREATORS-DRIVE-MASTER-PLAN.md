@@ -73,43 +73,65 @@
 
 ## Current Status
 
-| Phase | Name | Status | Files |
-|-------|------|--------|-------|
-| 0 | Environment Setup | ✅ Complete | `.env`, `config/service-account.json` |
+| Phase | Name | Status | Key Files |
+|-------|------|--------|-----------|
+| 0 | Environment Setup | ✅ Complete | `.env`, `config/`, `src/config/clips-config.ts` |
 | 1 | ScrapCreators Service | ✅ Complete | `src/services/scrapcreators-service.ts` |
 | 2 | Google Drive Service | ✅ Complete | `src/services/drive-service.ts` |
-| 3 | Twitch Workflow | ✅ Complete | `src/services/clip-workflow.ts`, `src/api/clips.ts` |
+| 3 | Twitch Workflow + API | ✅ Complete | `src/services/clip-workflow.ts`, `src/api/clips.ts` |
 | 4a | YouTube Core Service | ✅ Complete | `src/services/youtube-service.ts`, `youtube-workflow.ts` |
-| 4b | YouTube API Routes | ⏳ Pending | `src/api/youtube.ts` |
-| 5 | VOD Detection & Multi-Clip | 📋 Planned | See `PHASE-5-VOD-DETECTION.md` |
-| 6 | AI Auto-Clipping | 📋 Future | Vizard.ai or custom |
+| **4b** | **YouTube API Routes** | ⏳ **Pending** | `src/api/youtube.ts` |
+| **5** | **VOD Detection & Multi-Clip** | 📋 Planned | See `PHASE-5-VOD-DETECTION.md` |
+| 6 | Whop Webhooks | 📋 Future | Client/clipper management |
+| 7 | Admin Dashboard | 📋 Future | Analytics, management UI |
+
+### CLI Tools Status
+
+| Tool | Status | Version |
+|------|--------|---------|
+| yt-dlp | ✅ Installed | 2025.06.09 |
+| ffmpeg | ✅ Installed | 7.1.1 |
 
 ---
 
-## Phase 5: Dev Stream Detection
+## Implementation Phases
 
-Specifically designed for **software development live streams**:
+### Completed Phases
 
-### Detection Signals
+| Phase | Documentation | Claude Code Prompt |
+|-------|---------------|-------------------|
+| 0-3 | `PHASE-0-ENV-SETUP.md` through `PHASE-3-WORKFLOW.md` | N/A (already done) |
+| 4a | `PHASE-4-YOUTUBE.md` | `CLAUDE-CODE-PHASE-4.md` |
 
-| Signal | What It Catches | Method |
-|--------|----------------|--------|
-| **Teaching phrases** | "so what we're doing here is...", explanations | Transcript keyword matching |
-| **Realization moments** | "oh that's why!", "boom", "found it" | Phrase detection (+4 score) |
-| **Terminal activity** | npm install, builds, test output | FFmpeg scene detection |
-| **Code scrolling** | Active coding, navigation | Frame difference analysis |
+### Pending Phases
 
-### Clip Types
+| Phase | Documentation | Claude Code Prompt |
+|-------|---------------|-------------------|
+| **4b** | `PHASE-4B-YOUTUBE-ROUTES.md` | See below |
+| **5** | `PHASE-5-VOD-DETECTION.md` | `CLAUDE-CODE-PHASE-5.md` |
 
-| Type | Description | Detection |
-|------|-------------|-----------|
-| `explanation` | Teaching a concept | High transcript, low motion |
-| `build_moment` | Terminal output, builds | Low transcript, high motion |
-| `demo` | Explaining while coding | Both signals present |
-| `aha_moment` | Discovery/realization | Realization phrase detected |
+---
 
-### API Endpoints (Phase 5)
+## API Endpoints
 
+### Twitch Clips (✅ Working)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/clips/import` | Import single Twitch clip |
+| POST | `/api/clips/import/batch` | Import multiple clips (max 10) |
+| POST | `/api/clips/preview` | Preview clip metadata |
+
+### YouTube Clips (⏳ Phase 4b)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/youtube/import` | Import clip with timestamps |
+| POST | `/api/youtube/import/batch` | Multiple clips from one video |
+| POST | `/api/youtube/import/chapter` | Import by chapter name |
+| POST | `/api/youtube/preview` | Get video metadata |
+| POST | `/api/youtube/chapters` | List video chapters |
+| POST | `/api/youtube/transcript` | Get video transcript |
+
+### VOD Detection (📋 Phase 5)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | `/api/vod/detect` | Detect highlights in VOD |
@@ -119,84 +141,30 @@ Specifically designed for **software development live streams**:
 
 ---
 
-## Configuration
-
-### ScrapCreators API
-- **Endpoint:** `https://api.scrapecreators.com/v1`
-- **Supports:** Twitch clips, YouTube metadata/transcripts
-
-### Google Drive
-- **Auth Method:** Service Account
-- **Service Account:** `clip-drive-uploader@whop-clipping-agency.iam.gserviceaccount.com`
-- **Parent Folder ID:** `1SJ71RXmGln7sDI8Vs1aX-SeiDpSO09Eb`
-- **Folder Structure:** Date-based subfolders (`YYYY-MM-DD`)
-
-### External Tools
-- **yt-dlp:** YouTube/Twitch video downloading
-- **ffmpeg:** Video processing, scene detection, splitting
-
----
-
-## Implementation Phases
-
-| Phase | Name | Dependencies | Documentation |
-|-------|------|--------------|---------------|
-| 0 | Environment Setup | None | `PHASE-0-ENV-SETUP.md` |
-| 1 | ScrapCreators Service | Phase 0 | `PHASE-1-SCRAPCREATORS.md` |
-| 2 | Google Drive Service | Phase 0 | `PHASE-2-DRIVE-SERVICE.md` |
-| 3 | Twitch Workflow | Phases 1 & 2 | `PHASE-3-WORKFLOW.md` |
-| 4 | YouTube Service | Phases 0 & 2 | `PHASE-4-YOUTUBE.md` |
-| **5** | **VOD Detection & Multi-Clip** | Phase 4 | `PHASE-5-VOD-DETECTION.md` |
-| 6 | AI Auto-Clipping (External) | Phase 5 | *Research complete* |
-
----
-
 ## Quick Start
 
-### CLI Usage
-
-```bash
-cd "/Users/supabowl/Library/Mobile Documents/com~apple~CloudDocs/BHT Promo iCloud/Organized AI/Windsurf/whop-clipping-agency"
-
-# Import Twitch clip
-npm run test:workflow
-
-# Import YouTube clip
-npx tsx scripts/import-youtube-clip.ts "https://youtube.com/watch?v=VIDEO_ID" "1:30" "2:45"
-
-# Detect highlights (Phase 5)
-npm run test:detection "https://youtube.com/watch?v=VOD_ID"
-
-# Extract multiple clips (Phase 5)
-npm run test:vod-extract "https://youtube.com/watch?v=VOD_ID"
-```
-
-### API Usage
-
-```bash
-# Start server
-npm run dev
-
-# Detect + Extract (Phase 5 full workflow)
-curl -X POST http://localhost:3000/api/vod/detect-and-extract \
-  -H "Content-Type: application/json" \
-  -d '{
-    "vodUrl": "https://youtube.com/watch?v=VOD_ID",
-    "maxClips": 5,
-    "quality": "1080"
-  }'
-```
-
----
-
-## Claude Code Execution
+### Execute Phase 4b (YouTube Routes)
 
 ```bash
 cd "/Users/supabowl/Library/Mobile Documents/com~apple~CloudDocs/BHT Promo iCloud/Organized AI/Windsurf/whop-clipping-agency"
 claude --dangerously-skip-permissions
+```
 
-# Execute phases
-"Read PLANNING/implementation-phases/PHASE-5-VOD-DETECTION.md and execute all tasks"
+Prompt:
+```
+Read PLANNING/implementation-phases/PHASE-4B-YOUTUBE-ROUTES.md and execute all tasks.
+```
+
+### Execute Phase 5 (VOD Detection)
+
+```bash
+cd "/Users/supabowl/Library/Mobile Documents/com~apple~CloudDocs/BHT Promo iCloud/Organized AI/Windsurf/whop-clipping-agency"
+claude --dangerously-skip-permissions
+```
+
+Prompt:
+```
+Read PLANNING/implementation-phases/PHASE-5-VOD-DETECTION.md and execute all tasks.
 ```
 
 ---
@@ -214,8 +182,7 @@ claude --dangerously-skip-permissions
 
 **GitHub:** https://github.com/Organized-AI/whop-clipping-agency
 
-**Key Commits:**
-- `5ffc17d` - Phase 4 planning documentation
-- `3ff0516` - Phase 4: YouTube clip service with yt-dlp
-- `15c33e6` - Claude Code marketplace components
-- `896c941` - Phase planning documentation
+**Recent Commits:**
+- `f167a09` - docs: Add AI clipping research and dev stream detection design
+- `cdd514d` - docs: Add Phase 5 VOD detection and multi-clip planning
+- `5ffc17d` - docs: Add Phase 4 YouTube planning documentation
