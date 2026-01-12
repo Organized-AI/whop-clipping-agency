@@ -45,7 +45,8 @@
       "Bash(npm run test:workflow:*)",
       "Bash(git commit -m \"$\\(cat <<''EOF''\nPhase 3: Workflow and API integration\n\n- Add clip-workflow.ts service orchestrating ScrapCreators and Drive\n- Create Express API routes: /api/clips/import, /import/batch, /preview\n- Update index.ts with clips router integration\n- Add test-workflow.ts for end-to-end workflow testing\n- Add test-api.ts for HTTP endpoint testing\n- Full clip import pipeline: fetch → download → upload to Drive\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(npm run dev:*)",
-      "Bash(npm run test:api:*)"
+      "Bash(npm run test:api:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nPhase 4b: YouTube API routes\n\nAdd Express.js routes for YouTube clip import workflow:\n- POST /api/youtube/import - Single clip with timestamps\n- POST /api/youtube/import/batch - Multiple clips from same video\n- POST /api/youtube/import/chapter - Import by chapter name\n- POST /api/youtube/preview - Get video metadata\n- POST /api/youtube/chapters - List video chapters\n- POST /api/youtube/transcript - Get video transcript\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
     ],
     "deny": []
   },
