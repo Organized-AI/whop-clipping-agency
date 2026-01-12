@@ -1,8 +1,8 @@
-# Phase 2 Roadmap: Agency Management System
+# V2 Roadmap: Agency Management System
 
-**Status:** Planned for V2  
-**Staged:** January 11, 2026  
-**Priority:** After clip import pipeline is complete
+**Status:** Staged for Future Implementation  
+**Created:** January 2026  
+**Priority:** After V1 clip import pipeline is complete
 
 ---
 
@@ -15,12 +15,13 @@ Get clips into Google Drive efficiently:
 - VOD highlight detection (Phase 5) 📋
 - Organized Drive folder structure ✅
 
-### V2: Agency Management (These Phases)
-Run the clipping agency business:
+### V2: Agency Management + Distribution (These Phases)
+Run the clipping agency business AND distribute content:
 - Whop product tiers & memberships
 - Clipper applications & assignments
 - Client notifications & alerts
 - Admin dashboard & analytics
+- **Instagram auto-posting** ← NEW
 
 ---
 
@@ -35,6 +36,7 @@ Run the clipping agency business:
 | **V2-4** | Drive Integration | OAuth flow, folder provisioning per client |
 | **V2-5** | Admin API | Client/clipper management endpoints |
 | **V2-6** | Notifications | Alerts, overdue monitoring |
+| **V2-7** | **Instagram Auto-Post** | Programmatic posting to Reels via Graph API |
 
 ---
 
@@ -65,6 +67,7 @@ Minimum ad budget: $2,000/month
 | `PHASE_4_DRIVE.md` | Google Drive OAuth & folder management |
 | `PHASE_5_ADMIN_API.md` | Admin endpoints for management |
 | `PHASE_6_NOTIFICATIONS.md` | Alert & notification system |
+| `PHASE_7_INSTAGRAM.md` | Instagram Reels auto-posting via Graph API |
 
 ---
 
@@ -85,7 +88,7 @@ Then:
 
 ## Integration Points with V1
 
-V2 will build on top of V1 services:
+V2 builds on top of V1 services:
 
 ```
 V1 Services (Keep)          V2 Services (Add)
@@ -93,7 +96,65 @@ V1 Services (Keep)          V2 Services (Add)
 ├── drive-service           ├── clipper-service
 ├── youtube-service         ├── assignment-service
 ├── clip-workflow           ├── notification-service
-└── youtube-workflow        └── admin-service
+├── youtube-workflow        ├── admin-service
+└── vod-service             └── instagram-service  ← NEW
 ```
 
-The clip import workflows become the "engine" that V2's assignment system triggers.
+---
+
+## Full Pipeline (V1 + V2)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         FULL PIPELINE                           │
+└─────────────────────────────────────────────────────────────────┘
+
+  CONTENT SOURCE              V1: IMPORT                 V2: DISTRIBUTE
+  ─────────────────          ─────────────              ───────────────
+  
+  ┌─────────────┐           ┌─────────────┐           ┌─────────────┐
+  │   Twitch    │──────────▶│             │           │  Instagram  │
+  │   Clips     │           │             │──────────▶│   Reels     │
+  └─────────────┘           │   Google    │           └─────────────┘
+                            │   Drive     │
+  ┌─────────────┐           │             │           ┌─────────────┐
+  │  YouTube    │──────────▶│  (Organized │──────────▶│   TikTok    │
+  │   Clips     │           │   Folders)  │           │  (Future)   │
+  └─────────────┘           │             │           └─────────────┘
+                            │             │
+  ┌─────────────┐           │             │           ┌─────────────┐
+  │    VOD      │──────────▶│             │──────────▶│  YouTube    │
+  │  Detection  │           │             │           │   Shorts    │
+  └─────────────┘           └─────────────┘           └─────────────┘
+                                  │
+                                  ▼
+                            ┌─────────────┐
+                            │   Clipper   │
+                            │ Assignment  │
+                            │   (V2)      │
+                            └─────────────┘
+```
+
+---
+
+## Instagram Auto-Post (Phase 7) Summary
+
+**Requirements:**
+- Instagram Business Account
+- Facebook Developer App
+- Instagram Graph API permissions
+
+**What It Does:**
+- Posts clips directly to Instagram Reels
+- Two-step API process (container → publish)
+- Supports custom captions and hashtags
+- Can post from Drive files or import fresh
+
+**Endpoints:**
+```
+POST /api/instagram/post           # Direct video URL
+POST /api/instagram/import-and-post # Twitch → Drive → Instagram
+POST /api/instagram/post-from-drive # Existing Drive file
+```
+
+See `PHASE_7_INSTAGRAM.md` for full implementation details.
