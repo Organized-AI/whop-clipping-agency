@@ -15,7 +15,9 @@
     "test:workflow": "npx tsx scripts/test-workflow.ts",
     "test:api": "npx tsx scripts/test-api.ts",
     "test:youtube": "npx tsx scripts/test-youtube.ts",
-    "import:youtube": "npx tsx scripts/import-youtube-clip.ts"
+    "import:youtube": "npx tsx scripts/import-youtube-clip.ts",
+    "test:detection": "npx tsx scripts/test-detection.ts",
+    "test:vod-extract": "npx tsx scripts/test-vod-extract.ts"
   },
   "keywords": [
     "whop",

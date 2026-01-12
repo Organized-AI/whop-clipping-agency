@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import clipsRouter from "./api/clips";
 import youtubeRouter from "./api/youtube";
+import vodRouter from "./api/vod";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -37,6 +38,7 @@ app.post("/webhooks/whop", express.raw({ type: "application/json" }), (req, res)
 // API Routes
 app.use("/api/clips", clipsRouter);
 app.use("/api/youtube", youtubeRouter);
+app.use("/api/vod", vodRouter);
 
 // Error handler
 app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
@@ -49,6 +51,7 @@ app.listen(PORT, () => {
   console.log(`Health check: http://localhost:${PORT}/health`);
   console.log(`Twitch clips: POST http://localhost:${PORT}/api/clips/import`);
   console.log(`YouTube clips: POST http://localhost:${PORT}/api/youtube/import`);
+  console.log(`VOD detection: POST http://localhost:${PORT}/api/vod/detect`);
 });
 
 export default app;
