@@ -9,6 +9,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
+// Timeout constants (in milliseconds)
+const API_TIMEOUT_MS = 30000; // 30 seconds for API calls
+const DOWNLOAD_TIMEOUT_MS = 300000; // 5 minutes for video downloads
+
 export class ScrapCreatorsService {
   private apiKey: string;
   private apiUrl: string;
@@ -57,28 +61,41 @@ export class ScrapCreatorsService {
     // API requires the full URL, not just the slug
     const encodedUrl = encodeURIComponent(clipUrl);
 
-    const response = await fetch(`${this.apiUrl}/twitch/clip?url=${encodedUrl}`, {
-      method: 'GET',
-      headers: {
-        'x-api-key': this.apiKey,
-        'Content-Type': 'application/json',
-      },
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
 
-    if (!response.ok) {
-      throw new Error(`ScrapCreators API error: ${response.status} ${response.statusText}`);
+    try {
+      const response = await fetch(`${this.apiUrl}/twitch/clip?url=${encodedUrl}`, {
+        method: 'GET',
+        headers: {
+          'x-api-key': this.apiKey,
+          'Content-Type': 'application/json',
+        },
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        throw new Error(`ScrapCreators API error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      // Validate response
+      const parsed = ScrapCreatorsResponseSchema.safeParse(data);
+      if (!parsed.success) {
+        console.error('API Response validation failed:', parsed.error);
+        throw new Error('Invalid API response format');
+      }
+
+      return parsed.data;
+    } catch (error: unknown) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error(`ScrapCreators API timeout after ${API_TIMEOUT_MS / 1000}s`);
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeoutId);
     }
-
-    const data = await response.json();
-
-    // Validate response
-    const parsed = ScrapCreatorsResponseSchema.safeParse(data);
-    if (!parsed.success) {
-      console.error('API Response validation failed:', parsed.error);
-      throw new Error('Invalid API response format');
-    }
-
-    return parsed.data;
   }
 
   /**
@@ -155,19 +172,33 @@ export class ScrapCreatorsService {
     console.log(`From: ${processedClip.videoUrl}`);
     console.log(`To: ${filepath}`);
 
-    const response = await fetch(processedClip.videoUrl);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), DOWNLOAD_TIMEOUT_MS);
 
-    if (!response.ok) {
-      throw new Error(`Failed to download video: ${response.status}`);
+    try {
+      const response = await fetch(processedClip.videoUrl, {
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to download video: ${response.status}`);
+      }
+
+      const buffer = await response.arrayBuffer();
+      fs.writeFileSync(filepath, Buffer.from(buffer));
+
+      const stats = fs.statSync(filepath);
+      console.log(`Downloaded: ${(stats.size / 1024 / 1024).toFixed(2)} MB`);
+
+      return filepath;
+    } catch (error: unknown) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error(`Video download timeout after ${DOWNLOAD_TIMEOUT_MS / 1000}s`);
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeoutId);
     }
-
-    const buffer = await response.arrayBuffer();
-    fs.writeFileSync(filepath, Buffer.from(buffer));
-
-    const stats = fs.statSync(filepath);
-    console.log(`Downloaded: ${(stats.size / 1024 / 1024).toFixed(2)} MB`);
-
-    return filepath;
   }
 
   /**

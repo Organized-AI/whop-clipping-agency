@@ -1,10 +1,12 @@
 import { youtubeService } from './youtube-service';
 import { getDriveService } from './drive-service';
+import { getTempDir } from '../config/clips-config';
 import {
   ExtractClipsRequest,
   ExtractClipsResponse,
   ExtractedClip
 } from '../types/highlights';
+import { sanitizeFilename } from '../utils/sanitize';
 import { execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -44,7 +46,7 @@ export class VodService {
     console.log(`\nDownload range: ${this.formatTime(minStart)} - ${this.formatTime(maxEnd)}`);
 
     const sessionId = uuidv4().slice(0, 8);
-    const tempDir = `/tmp/vod-${sessionId}`;
+    const tempDir = path.join(getTempDir(), `vod-${sessionId}`);
     fs.mkdirSync(tempDir, { recursive: true });
 
     const results: ExtractedClip[] = [];
@@ -70,7 +72,8 @@ export class VodService {
 
       for (let i = 0; i < clips.length; i++) {
         const clip = clips[i];
-        const clipName = clip.name || `clip-${i + 1}`;
+        const rawName = clip.name || `clip-${i + 1}`;
+        const clipName = sanitizeFilename(rawName, 50);
         const outputPath = path.join(tempDir, `${clipName}.mp4`);
 
         try {
@@ -158,13 +161,8 @@ export class VodService {
       }
 
     } finally {
-      // Cleanup temp directory
-      console.log('\nCleaning up temp files...');
-      try {
-        fs.rmSync(tempDir, { recursive: true, force: true });
-      } catch (e) {
-        // Ignore cleanup errors
-      }
+      // Cleanup temp directory with logging
+      this.cleanupTempDir(tempDir, sessionId);
     }
 
     const processingTime = (Date.now() - startTime) / 1000;
@@ -216,6 +214,45 @@ export class VodService {
   private getFileSize(filePath: string): string {
     const stats = fs.statSync(filePath);
     return (stats.size / (1024 * 1024)).toFixed(1);
+  }
+
+  /**
+   * Cleanup temp directory with detailed logging
+   */
+  private cleanupTempDir(tempDir: string, sessionId: string): void {
+    console.log(`\n[Cleanup] Session ${sessionId}`);
+
+    try {
+      if (!fs.existsSync(tempDir)) {
+        console.log('[Cleanup] Directory already removed');
+        return;
+      }
+
+      // Count files and total size before cleanup
+      const files = fs.readdirSync(tempDir);
+      let totalSize = 0;
+
+      for (const file of files) {
+        try {
+          const filePath = path.join(tempDir, file);
+          const stats = fs.statSync(filePath);
+          totalSize += stats.size;
+        } catch {
+          // File may have been removed
+        }
+      }
+
+      const sizeMB = (totalSize / (1024 * 1024)).toFixed(1);
+      console.log(`[Cleanup] Removing ${files.length} files (${sizeMB} MB)`);
+
+      // Remove directory
+      fs.rmSync(tempDir, { recursive: true, force: true });
+      console.log('[Cleanup] ✓ Temp directory removed successfully');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error(`[Cleanup] ⚠️ Failed to remove temp directory: ${errorMessage}`);
+      console.error(`[Cleanup] Manual cleanup may be needed: ${tempDir}`);
+    }
   }
 }
 

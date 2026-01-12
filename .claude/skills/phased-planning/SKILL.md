@@ -204,7 +204,8 @@ Generate `CLAUDE-CODE-PHASE-0.md` at project root for easy copy-paste into Claud
 | 2 | Framework | Base classes, types, patterns |
 | 3 | Core Logic | Main business logic implementation |
 | 4-N | Feature Phases | Individual features/components |
-| Final | Integration | CLI, tests, end-to-end verification |
+| N+1 | Integration | CLI, tests, end-to-end verification |
+| **Final** | **Post-Build Hardening** ⭐ NEW | **Critical fixes, cross-platform compatibility, production readiness** |
 
 ---
 
@@ -389,6 +390,126 @@ claude --dangerously-skip-permissions
 6. **No time estimates** - Use phase order, not days/weeks
 7. **Context files** - Always specify what to read first
 8. **MCP configuration** - Ensure servers are configured before Phase 1
+9. **Always end with hardening** - Post-build analysis reveals production issues ⭐ NEW
+
+---
+
+## Post-Build Hardening Phase ⭐ NEW
+
+After completing all feature phases, **always create a hardening phase** to address issues discovered during the build. This phase catches problems that only become apparent after the full system is implemented.
+
+### When to Create Hardening Phase
+
+Create after:
+- All feature phases complete
+- Initial integration testing done
+- Completeness analysis performed
+
+### Hardening Phase Template
+
+```markdown
+# Phase [Final]: Post-Build Hardening & Fixes
+
+## Objective
+Address critical issues, improve cross-platform compatibility, and implement production-readiness improvements discovered during completeness analysis.
+
+---
+
+## Priority Levels
+
+| Priority | Impact | Action |
+|----------|--------|--------|
+| 🔴 Critical | Breaks functionality | Must fix immediately |
+| 🟠 High | Production issues | Should fix before deploy |
+| 🟡 Medium | Quality/maintenance | Nice to have |
+| 🔵 Low | Future improvements | Document for later |
+
+---
+
+## Common Hardening Tasks
+
+### 🔴 Critical (Always Check)
+- [ ] Cross-platform paths (no hard-coded `/tmp`, use `os.tmpdir()`)
+- [ ] Missing input validation (all API endpoints use Zod schemas)
+- [ ] Unhandled errors that crash the process
+- [ ] Security vulnerabilities (injection, XSS, secrets in code)
+
+### 🟠 High Priority (Usually Needed)
+- [ ] Environment validation on startup
+- [ ] Proper error logging (not silent catches)
+- [ ] Request timeouts on external calls
+- [ ] Webhook signature verification
+- [ ] Input sanitization for file names/paths
+
+### 🟡 Medium Priority (Recommended)
+- [ ] Structured logging (replace console.log)
+- [ ] Rate limiting for expensive operations
+- [ ] Graceful shutdown handling
+- [ ] Health check endpoints with dependency status
+- [ ] API documentation (OpenAPI/Swagger)
+
+### 🔵 Low Priority (Document for Later)
+- [ ] Test suite implementation
+- [ ] Performance optimizations
+- [ ] Advanced monitoring/metrics
+- [ ] Feature flags
+- [ ] A/B testing infrastructure
+
+---
+
+## Completeness Analysis Process
+
+Before writing the hardening phase, run this analysis:
+
+1. **Service-by-service review:**
+   - Are all methods fully implemented?
+   - Any TODO comments or stubs?
+   - Error handling consistent?
+
+2. **API route audit:**
+   - All routes have validation?
+   - Error responses standardized?
+   - Missing endpoints for CRUD operations?
+
+3. **Configuration check:**
+   - All env vars documented?
+   - Defaults sensible?
+   - Secrets properly handled?
+
+4. **Cross-platform compatibility:**
+   - File paths use path.join()?
+   - No hard-coded OS-specific paths?
+   - Line endings handled?
+
+5. **Integration points:**
+   - External API calls have timeouts?
+   - Retries implemented where needed?
+   - Fallbacks for degraded operation?
+
+---
+
+## Success Criteria Pattern
+
+- [ ] All 🔴 Critical issues fixed
+- [ ] All 🟠 High priority issues addressed
+- [ ] `npm run typecheck` passes
+- [ ] `npm run build` succeeds
+- [ ] No regressions in existing functionality
+- [ ] Server starts without errors
+- [ ] Basic API endpoints respond correctly
+```
+
+### Why This Matters
+
+Building software reveals issues that weren't visible during planning:
+
+1. **Path assumptions** - Works on your machine, fails on Windows/CI
+2. **Missing validation** - Happy path works, edge cases crash
+3. **Silent failures** - Errors swallowed, debugging impossible
+4. **Integration gaps** - Individual components work, together they don't
+5. **Production blind spots** - Dev works, prod fails
+
+The hardening phase catches these before users do.
 
 ---
 

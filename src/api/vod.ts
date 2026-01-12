@@ -3,7 +3,8 @@ import { highlightDetectionService } from '../services/highlight-detection';
 import { vodService } from '../services/vod-service';
 import {
   DetectHighlightsRequestSchema,
-  ExtractClipsRequestSchema
+  ExtractClipsRequestSchema,
+  DetectAndExtractRequestSchema
 } from '../types/highlights';
 
 const router = Router();
@@ -118,14 +119,19 @@ router.post('/extract', async (req: Request, res: Response) => {
  */
 router.post('/detect-and-extract', async (req: Request, res: Response) => {
   try {
-    const { vodUrl, maxClips = 10, minScore = 3, quality = '1080' } = req.body;
-
-    if (!vodUrl) {
+    const parseResult = DetectAndExtractRequestSchema.safeParse(req.body);
+    if (!parseResult.success) {
       return res.status(400).json({
         success: false,
-        error: { code: 'VALIDATION_ERROR', message: 'vodUrl required' },
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Invalid request body',
+          details: parseResult.error.flatten(),
+        },
       });
     }
+
+    const { vodUrl, maxClips, minScore, quality } = parseResult.data;
 
     // Step 1: Detect highlights
     console.log('Step 1: Detecting highlights...');
@@ -157,7 +163,7 @@ router.post('/detect-and-extract', async (req: Request, res: Response) => {
     const extraction = await vodService.extractClips({
       vodUrl,
       clips,
-      quality: quality as '2160' | '1440' | '1080' | '720' | '480',
+      quality,
     });
 
     return res.status(200).json({
@@ -169,6 +175,7 @@ router.post('/detect-and-extract', async (req: Request, res: Response) => {
     });
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Detect-and-extract error:', errorMessage);
     return res.status(500).json({
       success: false,
       error: { code: 'WORKFLOW_ERROR', message: errorMessage },

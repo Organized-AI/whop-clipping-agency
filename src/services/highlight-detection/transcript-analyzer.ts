@@ -1,6 +1,8 @@
 import { execSync } from 'child_process';
 import * as fs from 'fs';
+import * as path from 'path';
 import { youtubeService } from '../youtube-service';
+import { getTempDir } from '../../config/clips-config';
 import {
   TranscriptSegment,
   ScoredMoment
@@ -227,14 +229,20 @@ export class TranscriptAnalyzer {
    */
   private async getYtDlpTranscript(videoUrl: string): Promise<string> {
     const videoId = youtubeService.extractVideoId(videoUrl);
+    const tempDir = getTempDir();
+    const outputPath = path.join(tempDir, videoId);
+    const subFile = path.join(tempDir, `${videoId}.en.vtt`);
 
     try {
+      // Ensure temp directory exists
+      if (!fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir, { recursive: true });
+      }
+
       execSync(
-        `yt-dlp --write-auto-sub --skip-download --sub-lang en -o "/tmp/${videoId}" "${videoUrl}" 2>&1`,
+        `yt-dlp --write-auto-sub --skip-download --sub-lang en -o "${outputPath}" "${videoUrl}" 2>&1`,
         { encoding: 'utf-8', timeout: 60000 }
       );
-
-      const subFile = `/tmp/${videoId}.en.vtt`;
 
       if (fs.existsSync(subFile)) {
         const content = fs.readFileSync(subFile, 'utf-8');

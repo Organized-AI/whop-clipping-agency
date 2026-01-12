@@ -1,5 +1,7 @@
 import { config } from 'dotenv';
 import { z } from 'zod';
+import * as os from 'os';
+import * as path from 'path';
 
 config();
 
@@ -40,3 +42,15 @@ export function loadClipsConfig(): ClipsConfig {
 }
 
 export const clipsConfig = loadClipsConfig();
+
+/**
+ * Get cross-platform temp directory for clip processing
+ * Uses TEMP_DOWNLOAD_PATH env var if set, otherwise system temp dir
+ */
+export const getTempDir = (): string => {
+  const configuredPath = process.env.TEMP_DOWNLOAD_PATH;
+  if (configuredPath) {
+    return path.resolve(configuredPath);
+  }
+  return path.join(os.tmpdir(), 'whop-clipping-agency');
+};

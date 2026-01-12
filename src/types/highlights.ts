@@ -97,6 +97,21 @@ export interface DetectHighlightsResponse {
   highlights: DetectedHighlight[];
 }
 
+// Combined detect-and-extract request
+export const DetectAndExtractRequestSchema = z.object({
+  vodUrl: z.string().url(),
+  maxClips: z.number().min(1).max(20).optional().default(10),
+  minScore: z.number().min(0).optional().default(3),
+  quality: z.enum(['2160', '1440', '1080', '720', '480']).optional().default('1080'),
+});
+
+export interface DetectAndExtractRequest {
+  vodUrl: string;
+  maxClips?: number;
+  minScore?: number;
+  quality?: '2160' | '1440' | '1080' | '720' | '480';
+}
+
 // Multi-clip extraction request
 export const ExtractClipsRequestSchema = z.object({
   vodUrl: z.string().url(),

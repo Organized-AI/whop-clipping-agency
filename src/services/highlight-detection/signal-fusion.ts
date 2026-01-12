@@ -10,6 +10,25 @@ import {
 
 /**
  * Combines signals from multiple analyzers into ranked highlights
+ *
+ * FUTURE WORK: Audio Analysis
+ * ===========================
+ * The audio signal is currently a placeholder (always receives empty array).
+ * A full audio analyzer could detect:
+ *
+ * 1. Volume spikes after silence (indicates excitement/realization)
+ * 2. Speech vs. coding ratio (high speech = explanation)
+ * 3. Tone/pitch changes (enthusiasm detection)
+ * 4. Music/sound effects (stream transitions)
+ *
+ * Implementation approach:
+ * - Extract audio track with: ffmpeg -i video.mp4 -vn -acodec pcm_s16le audio.wav
+ * - Use FFmpeg's astats filter for volume analysis
+ * - Use speech-to-text timing from transcript for speech ratio
+ * - Consider external library for advanced audio features
+ *
+ * The SignalFusion class is already prepared to accept audio signals
+ * with configurable weight in FUSION_WEIGHTS.audio
  */
 export class SignalFusion {
 

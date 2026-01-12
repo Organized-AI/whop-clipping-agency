@@ -15,6 +15,9 @@ import {
 
 const execAsync = promisify(exec);
 
+// Timeout for API calls
+const API_TIMEOUT_MS = 30000;
+
 export class YouTubeService {
   private tempPath: string;
   private ytdlpPath: string;
@@ -152,6 +155,9 @@ export class YouTubeService {
   async getTranscript(videoUrl: string): Promise<string | null> {
     const videoId = this.extractVideoId(videoUrl);
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+
     try {
       const response = await fetch(
         `${this.apiUrl}/youtube/video?videoId=${videoId}`,
@@ -160,6 +166,7 @@ export class YouTubeService {
             'x-api-key': this.apiKey,
             'Content-Type': 'application/json',
           },
+          signal: controller.signal,
         }
       );
 
@@ -170,9 +177,15 @@ export class YouTubeService {
 
       const data = await response.json() as ScrapCreatorsYouTubeResponse;
       return data.transcript_only_text || data.transcript || null;
-    } catch (error) {
-      console.warn('Failed to fetch transcript:', error);
+    } catch (error: unknown) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.warn(`Transcript API timeout after ${API_TIMEOUT_MS / 1000}s`);
+      } else {
+        console.warn('Failed to fetch transcript:', error);
+      }
       return null;
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
